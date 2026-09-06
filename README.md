@@ -1,287 +1,68 @@
-Sales Data Analysis (Superstore EDA)
+# Sample Superstore – Power Query Data Cleaning
 
-Exploratory Data Analysis (EDA) on the Sample Superstore dataset using Python, Pandas, Matplotlib, and Seaborn. The notebook (sales.ipynb) covers data loading, cleaning, feature engineering, and visualizations to uncover trends in sales, profit, and discounting behavior. 
+This project uses **Power Query (Power BI / Excel)** to clean and transform the classic *Sample Superstore* dataset, preparing it for analysis and dashboard building.
 
-📌 Overview
+## 📁 Dataset
 
-This notebook covers a complete EDA workflow on retail sales data:
+The raw data (`samplesuperstore`) contains order-level retail transaction records with fields such as:
 
-Loading and inspecting the dataset
+- Row ID, Order ID, Order Date, Ship Date, Ship Mode
+- Customer ID, Customer Name
+- Product, Category, Sub-Category
+- Sales, Quantity, Discount, Profit
+- (and other standard Superstore columns)
 
-Data cleaning
+## 🖼️ Output Screenshot
 
-Parsing Order Date and Ship Date
+Power Query Editor showing the applied steps and cleaned output:
 
-Feature engineering using Delivery Days
 
-Checking missing values and unique categories
+## 🔧 Transformations Applied (Power Query Steps)<img width="609" height="518" alt="download" src="https://github.com/user-attachments/assets/fb4e5366-9152-486a-bef9-3865be731735" />
 
-Aggregating total sales by product category
 
-Visualizing sales by category
+The following steps were applied in the Power Query Editor:
 
-Analyzing profit by category
+| Step | Description |
+|------|-------------|
+| **Source** | Loaded the raw dataset into Power Query |
+| **Promoted Headers** | Set the first row as column headers |
+| **Changed Column Type** | Set appropriate data types for initial columns |
+| **Changed Type** | Adjusted column types further for consistency |
+| **Trimmed Text** | Removed extra spaces from text fields |
+| **Inserted Year** | Added a new `Year` column extracted from `Order Date` |
+| **Inserted Month** | Added a new `Month` column extracted from `Order Date` |
+| **Inserted Quarter** | Added a new `Quarter` column using `Date.QuarterOfYear([Order Date])` |
 
-Examining the impact of discounts on profit
+Example M code used for the Quarter column:
 
-Correlation analysis using a heatmap 
+```m
+= Table.AddColumn(#"Inserted Month", "Quarter", each Date.QuarterOfYear([Order Date]), Int64.Type)
+```
 
+## 🎯 Purpose
 
-📂 Project Structure
+These date-based columns (Year, Month, Quarter) enable:
+- Time-series trend analysis (yearly/quarterly/monthly sales & profit)
+- Easier slicing and filtering in Power BI/Excel dashboards
+- Seasonality and growth pattern analysis
 
-├── sales.ipynb              # Main analysis notebook
-├── samplesuperstore.csv     # Dataset
-└── README.md
+## 🛠️ Tools Used
 
-🗂️ Dataset
+- **Power Query Editor** (Power BI Desktop / Excel)
+- Applied Steps panel for reproducible, auditable transformations
 
-The notebook expects a CSV file named:
+## 🚀 How to Use
 
-samplesuperstore.csv
+1. Open the `.pbix` (Power BI) or `.xlsx` (Excel) file included in this repo.
+2. Go to **Transform Data** to view/edit the Power Query steps.
+3. Click **Close & Apply** to load the cleaned data into the model/report.
 
-For Google Colab:
+## 📌 Next Steps
 
-/content/samplesuperstore.csv
+- Build visuals (sales by quarter, profit by category, etc.)
+- Create measures using DAX for KPIs
+- Publish dashboard to Power BI Service
 
-If running locally:
+---
 
-df = pd.read_csv("samplesuperstore.csv")
-
-Typical columns include:
-
-Order Date
-Ship Date
-Category
-Sub-Category
-Sales
-Profit
-Discount
-Region
-
-🛠️ Tech Stack / Requirements
-
-Python 3.x
-
-Pandas
-
-NumPy
-
-Matplotlib
-
-Seaborn
-
-
-Install Dependencies
-
-pip install pandas numpy matplotlib seaborn jupyter
-
-🚀 Usage
-
-1. Clone the repository
-
-git clone https://github.com/<your-username>/<repo-name>.git
-cd <repo-name>
-
-2. Place the dataset
-
-Place:
-
-samplesuperstore.csv
-
-in the appropriate directory.
-
-3. Launch Jupyter Notebook
-
-jupyter notebook sales.ipynb
-
-4. Run all cells
-
-Run all notebook cells to reproduce the analysis. 
-
-📊 Key Steps in the Notebook
-
-Step	Description
-
-Data Loading	Reads the CSV into a Pandas DataFrame
-Data Inspection	Uses head(), info(), shape, describe()
-Date Parsing	Converts Order Date and Ship Date to datetime
-Feature Engineering	Calculates Delivery Days
-Data Quality Check	Checks unique categories and null values
-Sales Aggregation	Calculates total sales by Category
-Sales Visualization	Creates bar charts and histograms
-Profit Analysis	Uses bar plots and box plots
-Discount Impact	Creates a discount vs. profit scatter plot
-Correlation Analysis	Creates a correlation matrix and heatmap
-
-
-📈 Example: Code & Output
-
-1. Load and Inspect the Data
-
-import pandas as pd
-
-df = pd.read_csv("/content/samplesuperstore.csv")
-df.info()
-
-Output
-
-<class 'pandas.DataFrame'>
-RangeIndex: 200 entries, 0 to 199
-Data columns (total 5 columns):
- #   Column      Non-Null Count  Dtype
----  ------      --------------  -----
- 0   Order Date  200 non-null    object
- 1   Ship Date   200 non-null    object
- 2   Category    200 non-null    object
- 3   Region      200 non-null    object
- 4   Sales       200 non-null    float64
-
-dtypes: float64(1), object(4)
-memory usage: 7.9 KB
-
-2. Parse Dates and Create Delivery Days
-
-df['Order Date'] = pd.to_datetime(
-    df['Order Date'],
-    format="mixed"
-)
-
-df['Ship Date'] = pd.to_datetime(
-    df['Ship Date'],
-    format="mixed"
-)
-
-df['Delivery Days'] = (
-    df['Ship Date'] - df['Order Date']
-).dt.days
-
-df.head()
-
-Output
-
-Order Date  Ship Date         Category          Region   Sales  Delivery Days
-0 2023-01-01 2023-01-05        Furniture          West    164.34       4
-1 2023-01-04 2023-01-09        Office Supplies    West     68.55       5
-2 2023-01-07 2023-01-10        Office Supplies    West     51.77       3
-3 2023-01-10 2023-01-15        Furniture          South   265.61       5
-4 2023-01-13 2023-01-18        Office Supplies    East    193.44       5
-
-3. Aggregate Sales by Category
-
-category_sales = df.groupby('Category')['Sales'].sum()
-
-category_sales
-
-Output
-
-Category
-Furniture          15419.67
-Office Supplies    28919.40
-Technology         18756.14
-Name: Sales, dtype: float64
-
-4. Visualize Sales
-
-import matplotlib.pyplot as plt
-
-category_sales.plot(
-    kind='bar',
-    figsize=(8,5)
-)
-
-plt.title("Sales by Category")
-plt.ylabel("Total Sales")
-plt.show()
-
-Sales Distribution
-
-import seaborn as sns
-
-plt.figure(figsize=(8,5))
-
-sns.histplot(
-    df['Sales'],
-    bins=30
-)
-
-plt.title("Sales Distribution")
-plt.show()
-
-The histogram shows the distribution of individual sale amounts, with most sales concentrated at lower values and a longer tail of higher-value orders. 
-
-5. Profit by Category
-
-sns.barplot(
-    data=df,
-    x="Category",
-    y="Profit"
-)
-
-plt.title("Profit by Category")
-plt.show()
-
-sns.boxplot(
-    data=df,
-    x="Category",
-    y="Profit"
-)
-
-plt.title("Profit Variation Across Categories")
-plt.show()
-
-These plots show profitability and the variation of profit values across categories, including outliers. 
-
-6. Discount vs. Profit
-
-sns.scatterplot(
-    data=df,
-    x="Discount",
-    y="Profit"
-)
-
-plt.title("Impact of Discount on Profit")
-plt.show()
-
-This helps visualize whether higher discounts are associated with reduced or negative profit. 
-
-7. Correlation Heatmap
-
-numeric_df = df.select_dtypes(include="number")
-
-corr = numeric_df.corr()
-
-sns.heatmap(
-    corr,
-    annot=True
-)
-
-plt.title("Correlation Heatmap")
-plt.show()
-
-The heatmap shows relationships between numeric features such as Sales, Profit, Discount, and Quantity. 
-
-📈 Key Insights
-
-Identifies product categories that generate the most sales and profit.
-
-Shows how discounts can reduce or reverse profit margins.
-
-Highlights relationships between sales, profit, discount, and quantity.
-
-Identifies categories with high profit variation and outliers. 
-
-
-🤝 Contributing
-
-Feel free to fork the repository and submit a pull request with improvements or additional analysis, such as:
-
-Regional breakdowns
-
-Time-series trends
-
-Customer segmentation 
-
-
-📄 License
-
-This project is open source and available under the MIT License.
+*Feel free to fork this repo and extend the transformations or dashboards.*
