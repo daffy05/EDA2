@@ -1,4 +1,3 @@
-<img width="609" height="518" alt="download" src="https://github.com/user-attachments/assets/3e6785f0-bdff-4509-8c56-9041d7b99cfd" />
 Sales Data Analysis (Superstore EDA)
 
 Exploratory Data Analysis (EDA) on the Sample Superstore dataset using Python, Pandas, Matplotlib, and Seaborn. The notebook (sales.ipynb) covers data loading, cleaning, feature engineering, and visualizations to uncover trends in sales, profit, and discounting behavior. 
